@@ -1,720 +1,1027 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Invitación Día de la Madre</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Great+Vibes&display=swap" rel="stylesheet">
-<style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>IRON CLOCK // HARDCORE GYM TIMER</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Chakra+Petch:wght@500;700;800&family=JetBrains+Mono:wght@700;800&display=swap" rel="stylesheet">
 
+<style>
 :root {
-  --burgundy: #6b1a2a;
-  --burgundy-light: #8b2a3e;
-  --burgundy-pale: #c4748a;
-  --beige: #f5ede0;
-  --beige-dark: #e8d5bc;
-  --beige-mid: #d4b896;
-  --cream: #faf6f0;
-  --gold: #c9a96e;
-  --gold-light: #e8c98a;
-  --text-dark: #3a1a20;
-  --text-mid: #6b3a45;
+  --bg-deep: #08090b;
+  --panel: #111317;
+  --panel-border: #222731;
+  --panel-active: #1a1e26;
+
+  --tx-main: #f3f4f6;
+  --tx-muted: #848e9f;
+  --tx-dark: #4b5568;
+
+  --volt: #ceff00;
+  --volt-glow: rgba(206, 255, 0, 0.25);
+  --danger: #ff253a;
+  --danger-glow: rgba(255, 37, 58, 0.25);
+  --warning: #ffb000;
+  --warning-glow: rgba(255, 176, 0, 0.25);
+
+  --font-display: "Bebas Neue", sans-serif;
+  --font-hud: "Chakra Petch", monospace;
+  --font-mono: "JetBrains Mono", monospace;
+
+  --corner: 4px;
 }
 
-html { height: 100%; }
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
 
 body {
+  margin: 0;
+  background-color: var(--bg-deep);
+  background-image: 
+    linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+  background-size: 24px 24px;
+  color: var(--tx-main);
+  font-family: var(--font-hud);
   min-height: 100vh;
-  background: #1a0810;
-  background-image:
-    radial-gradient(ellipse at 30% 20%, #3a1020 0%, transparent 50%),
-    radial-gradient(ellipse at 70% 80%, #1a0a18 0%, transparent 50%);
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+}
+
+main {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 14px 14px calc(24px + env(safe-area-inset-bottom, 0px));
+  flex: 1;
+}
+main.pl { max-width: none; padding: 0; }
+
+/* Botones Compactos & Tácticos */
+button {
+  font-family: var(--font-hud);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border: 1px solid var(--panel-border);
+  background: var(--panel);
+  color: var(--tx-main);
+  border-radius: var(--corner);
+  padding: 8px 12px;
+  cursor: pointer;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-family: 'EB Garamond', Georgia, serif;
-  padding: 20px;
-  overflow-x: hidden;
+  gap: 6px;
+  transition: all .1s ease;
+  user-select: none;
+}
+button:active {
+  transform: translateY(1px);
+  background: var(--panel-active);
+}
+button.pri-volt {
+  background: var(--volt);
+  color: #000;
+  border-color: #e5ff4d;
+  box-shadow: 0 0 14px var(--volt-glow);
+  font-weight: 800;
+}
+button.pri-volt:active { background: #b8e600; }
+button.dg {
+  border-color: rgba(255, 37, 58, 0.3);
+  color: var(--danger);
+  background: rgba(255, 37, 58, 0.05);
+}
+button.dg:active { background: rgba(255, 37, 58, 0.15); }
+
+/* Inputs duros tipo consola */
+input, select {
+  font-family: var(--font-hud);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--tx-main);
+  background: #0d0e12;
+  border: 1px solid var(--panel-border);
+  border-radius: var(--corner);
+  padding: 8px 10px;
+  outline: none;
+}
+input:focus, select:focus {
+  border-color: var(--volt);
+  box-shadow: 0 0 8px var(--volt-glow);
 }
 
-/* ── PETALS ── */
-.petals-container {
-  position: fixed; inset: 0;
-  pointer-events: none; z-index: 0; overflow: hidden;
+/* Encabezados y títulos */
+.brand-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  border-bottom: 2px solid var(--panel-border);
+  padding-bottom: 10px;
+  margin-bottom: 14px;
 }
-.petal {
-  position: absolute; top: -40px;
-  opacity: 0;
-  animation: petalFall linear infinite;
+h1 {
+  font-family: var(--font-display);
+  font-size: 32px;
+  letter-spacing: 0.06em;
+  line-height: 0.9;
+  margin: 0;
 }
-@keyframes petalFall {
-  0%   { transform: translateY(0) rotate(0deg); opacity: 0; }
-  10%  { opacity: 0.65; }
-  90%  { opacity: 0.35; }
-  100% { transform: translateY(110vh) rotate(600deg); opacity: 0; }
-}
-
-/* ── SCENE ── */
-.scene {
-  position: relative; z-index: 10;
-  display: flex; flex-direction: column;
-  align-items: center; width: 100%;
-}
-
-/* ── ENVELOPE ── */
-.envelope-wrapper {
-  position: relative;
-  width: min(320px, 90vw);
-  height: min(220px, 62vw);
-  cursor: pointer;
-  transition: transform 0.3s ease;
-  filter: drop-shadow(0 20px 60px rgba(0,0,0,0.7));
-  -webkit-tap-highlight-color: transparent;
-}
-.envelope-wrapper:hover  { transform: scale(1.03) translateY(-4px); }
-.envelope-wrapper:active { transform: scale(0.97); }
-
-.env-body {
-  position: absolute; inset: 0;
-  background: linear-gradient(160deg, #e8d4b0 0%, #d4b88a 50%, #c9a87a 100%);
-  border-radius: 4px 4px 6px 6px;
-  overflow: hidden;
-}
-.env-body::before {
-  content: '';
-  position: absolute; inset: 0;
-  background:
-    linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 40%),
-    linear-gradient(315deg, rgba(0,0,0,0.08) 0%, transparent 40%);
+.brand-tag {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--volt);
+  letter-spacing: 0.15em;
 }
 
-/* Side shadow triangles */
-.env-left {
-  position: absolute; bottom: 0; left: 0;
-  width: 0; height: 0;
-  border-style: solid;
-  border-width: 0 0 110px 160px;
-  border-color: transparent transparent #c4a070 transparent;
-  opacity: 0.45;
-}
-.env-right {
-  position: absolute; bottom: 0; right: 0;
-  width: 0; height: 0;
-  border-style: solid;
-  border-width: 0 160px 110px 0;
-  border-color: transparent #c4a070 transparent transparent;
-  opacity: 0.45;
-}
-.env-bottom-v {
-  position: absolute; bottom: 0; left: 0; right: 0; height: 0;
-  border-left: 160px solid transparent;
-  border-right: 160px solid transparent;
-  border-bottom: 115px solid #c9a070;
-  opacity: 0.65;
-}
-
-/* Wax seal */
-.wax-seal {
-  position: absolute;
-  bottom: 28px; left: 50%;
-  transform: translateX(-50%);
-  width: 52px; height: 52px;
-  background: radial-gradient(circle at 40% 35%, #9b2040, #6b1a2a 60%, #4a1020);
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 3px 12px rgba(107,26,42,0.6), inset 0 1px 3px rgba(255,255,255,0.15);
-  z-index: 5;
-  transition: transform 0.35s ease 0.1s, opacity 0.35s ease 0.1s;
-}
-.wax-seal::before {
-  content: '';
-  position: absolute; inset: 4px;
-  border-radius: 50%;
-  border: 1px solid rgba(201,169,110,0.4);
-}
-.wax-seal-text {
-  font-family: 'Great Vibes', cursive;
-  color: var(--gold-light); font-size: 20px; line-height: 1;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
-}
-
-/* Gold inner border */
-.env-border {
-  position: absolute; inset: 4px;
-  border: 1px solid rgba(201,169,110,0.45);
-  border-radius: 3px;
-  pointer-events: none; z-index: 7;
-}
-
-/* Flap */
-.env-flap {
-  position: absolute; top: 0; left: 0; right: 0; height: 0;
-  border-left: 160px solid transparent;
-  border-right: 160px solid transparent;
-  border-top: 130px solid #d4b896;
-  transform-origin: top center;
-  z-index: 6;
-  transition: transform 0.95s cubic-bezier(0.4, 0, 0.2, 1);
-  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.18));
-}
-.env-flap::before {
-  content: '';
-  position: absolute; top: -130px; left: -160px;
-  width: 0; height: 0;
-  border-left: 160px solid transparent;
-  border-right: 160px solid transparent;
-  border-top: 130px solid rgba(255,255,255,0.07);
-}
-
-/* Mini card that rises */
-.card-rise {
-  position: absolute; top: 22px; left: 50%;
-  transform: translateX(-50%) translateY(20px);
-  width: 78%; opacity: 0; z-index: 4;
-  transition: transform 1.1s cubic-bezier(0.2,0.8,0.3,1) 0.55s,
-              opacity 0.5s ease 0.65s;
-  pointer-events: none;
-}
-.card-rise.risen {
-  transform: translateX(-50%) translateY(-260px);
-  opacity: 1;
-}
-
-/* Opening states */
-.envelope-wrapper.opening .env-flap {
-  transform: rotateX(180deg);
-}
-.envelope-wrapper.opening .wax-seal {
-  transform: translateX(-50%) scale(0);
-  opacity: 0;
-}
-
-/* Tap hint */
-.tap-hint {
-  margin-top: 28px; text-align: center;
-  animation: hintPulse 2.2s ease-in-out infinite;
-  transition: opacity 0.4s ease;
-}
-.tap-hint p {
-  font-family: 'EB Garamond', serif;
-  font-style: italic; font-size: 15px;
-  color: rgba(201,169,110,0.7);
-  letter-spacing: 0.05em;
-}
-.tap-hint .hint-icon { font-size: 24px; display: block; margin-bottom: 5px; }
-@keyframes hintPulse {
-  0%, 100% { opacity: 0.6; transform: translateY(0); }
-  50%       { opacity: 1;   transform: translateY(-4px); }
-}
-
-/* ── FULL OVERLAY ── */
-.invitation-overlay {
-  position: fixed; inset: 0;
-  background: rgba(15,5,10,0.93);
-  z-index: 100;
-  display: flex; align-items: flex-start;
-  justify-content: center;
-  opacity: 0; pointer-events: none;
-  transition: opacity 0.65s ease;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  padding: 16px 12px 32px;
-}
-.invitation-overlay.visible {
-  opacity: 1; pointer-events: all;
-}
-
-.card-container {
-  width: 100%; max-width: 420px;
-  margin: auto;
-  transform: scale(0.85) translateY(40px);
-  transition: transform 0.75s cubic-bezier(0.2,0.8,0.3,1) 0.15s;
-}
-.invitation-overlay.visible .card-container {
-  transform: scale(1) translateY(0);
-}
-
-/* ── CARD ── */
+/* Tarjetas de Rutinas */
 .card {
-  background: var(--cream);
-  position: relative; overflow: hidden;
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--corner);
+  padding: 12px;
+  margin-bottom: 10px;
+  position: relative;
+}
+.card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; width: 3px; height: 100%;
+  background: var(--panel-border);
+}
+.card.active-card::before { background: var(--volt); }
+
+.routine-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  letter-spacing: 0.04em;
+  margin: 0 0 4px;
+}
+.routine-meta {
+  display: flex;
+  gap: 12px;
+  font-size: 11px;
+  color: var(--tx-muted);
+  text-transform: uppercase;
+}
+.btn-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 34px;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+/* Editor */
+.editor-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.routine-input {
+  width: 100%;
+  font-family: var(--font-display);
+  font-size: 26px;
+  letter-spacing: 0.04em;
+  padding: 6px 10px;
+  margin-bottom: 12px;
+}
+.grid-time {
+  display: grid;
+  grid-template-columns: 1fr 1fr 64px;
+  gap: 6px;
+  margin-top: 8px;
+}
+.grid-time label {
+  font-size: 10px;
+  color: var(--tx-muted);
+  text-transform: uppercase;
+  font-weight: 700;
+}
+.dual-time {
+  display: flex;
+  align-items: center;
+  background: #0d0e12;
+  border: 1px solid var(--panel-border);
+  border-radius: var(--corner);
+  margin-top: 4px;
+}
+.dual-time input {
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: center;
+  padding: 6px 0;
+  font-family: var(--font-mono);
+}
+
+/* Pantalla del Temporizador (HUD Gym Wall Clock) */
+#play {
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background: #07080a;
+}
+body.w #play { box-shadow: inset 0 0 120px rgba(206, 255, 0, 0.08); }
+body.r #play { box-shadow: inset 0 0 120px rgba(255, 37, 58, 0.08); }
+body.p #play { box-shadow: inset 0 0 120px rgba(255, 176, 0, 0.08); }
+
+.hud-layout {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: calc(14px + env(safe-area-inset-top, 0px)) 16px calc(18px + env(safe-area-inset-bottom, 0px));
+  max-width: 520px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.hud-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--panel-border);
+  padding-bottom: 8px;
+}
+.hud-phase-tag {
+  font-family: var(--font-display);
+  font-size: 20px;
+  letter-spacing: 0.1em;
+  padding: 2px 10px;
+  border-radius: var(--corner);
+  text-transform: uppercase;
+}
+body.w .hud-phase-tag { background: var(--volt); color: #000; box-shadow: 0 0 12px var(--volt-glow); }
+body.r .hud-phase-tag { background: var(--danger); color: #fff; box-shadow: 0 0 12px var(--danger-glow); }
+body.p .hud-phase-tag { background: var(--warning); color: #000; box-shadow: 0 0 12px var(--warning-glow); }
+
+.hud-total-time {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--tx-muted);
+}
+
+/* Reloj Digital Gigante */
+.clock-display {
+  text-align: center;
+  margin: auto 0;
+}
+.clock-title {
+  font-family: var(--font-display);
+  font-size: clamp(26px, 7vw, 42px);
+  letter-spacing: 0.05em;
+  margin: 0 0 4px;
+  line-height: 1;
+  color: #fff;
+  text-transform: uppercase;
+}
+.clock-digits {
+  font-family: var(--font-mono);
+  font-size: clamp(74px, 25vw, 126px);
+  font-weight: 800;
+  line-height: 0.88;
+  letter-spacing: -0.04em;
+  color: #fff;
+  text-shadow: 0 0 25px rgba(255,255,255,0.15);
+}
+body.w .clock-digits { color: var(--volt); text-shadow: 0 0 30px var(--volt-glow); }
+body.r .clock-digits { color: var(--danger); text-shadow: 0 0 30px var(--danger-glow); }
+body.p .clock-digits { color: var(--warning); text-shadow: 0 0 30px var(--warning-glow); }
+
+/* Barra táctica de progreso */
+.progress-rail {
+  width: 100%;
+  height: 6px;
+  background: var(--panel-border);
   border-radius: 2px;
-  box-shadow:
-    0 0 0 1px var(--gold),
-    0 0 0 8px rgba(107,26,42,0.15),
-    0 30px 80px rgba(0,0,0,0.7),
-    0 0 0 9px var(--gold),
-    0 0 0 16px rgba(107,26,42,0.08);
+  overflow: hidden;
+  margin: 18px 0 10px;
+}
+.progress-rail-fill {
+  height: 100%;
+  width: 0%;
+  background: #fff;
+  transition: width .2s linear;
+}
+body.w .progress-rail-fill { background: var(--volt); box-shadow: 0 0 10px var(--volt); }
+body.r .progress-rail-fill { background: var(--danger); box-shadow: 0 0 10px var(--danger); }
+body.p .progress-rail-fill { background: var(--warning); box-shadow: 0 0 10px var(--warning); }
+
+/* Tarjeta "Siguiente bloque" */
+.hud-up-next {
+  background: rgba(17, 19, 23, 0.7);
+  border: 1px dashed var(--panel-border);
+  padding: 8px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
 }
 
-.church-bg {
-  position: absolute; inset: 0;
-  background-image: url('/mnt/user-data/uploads/IMG_6512.JPG');
-  background-size: cover; background-position: center top;
-  opacity: 0.07; filter: sepia(60%) saturate(0.5);
-  z-index: 0;
+/* Panel Inferior y Botones Reducidos */
+.hud-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
-.texture {
-  position: absolute; inset: 0;
-  background-image:
-    radial-gradient(ellipse at 50% 0%, rgba(201,169,110,0.12) 0%, transparent 60%),
-    radial-gradient(ellipse at 50% 100%, rgba(107,26,42,0.1) 0%, transparent 60%);
-  z-index: 1;
+.hud-stats-bar {
+  display: flex;
+  justify-content: space-around;
+  background: #0d0f13;
+  border: 1px solid var(--panel-border);
+  padding: 6px;
+  border-radius: var(--corner);
+  font-size: 12px;
 }
+.hud-stats-bar span { font-weight: 800; font-family: var(--font-mono); }
 
-.content {
-  position: relative; z-index: 2;
-  padding: 36px 28px 36px;
+/* Botonera Táctica Compacta */
+.tactical-controls {
+  display: grid;
+  grid-template-columns: 50px 42px 1fr 42px 50px;
+  gap: 6px;
+  align-items: center;
 }
+.tactical-controls button {
+  height: 44px;
+  padding: 0;
+  font-size: 13px;
+  border-radius: var(--corner);
+}
+.btn-main-action {
+  font-family: var(--font-display);
+  font-size: 20px !important;
+  letter-spacing: 0.08em;
+  background: #fff !important;
+  color: #000 !important;
+  border: none !important;
+}
+.btn-main-action:active { background: #dcdcdc !important; }
 
-/* Stagger reveal */
-.content > * { opacity: 0; transform: translateY(14px); }
-.invitation-overlay.visible .content > * {
-  animation: revealUp 0.6s ease forwards;
-}
-.invitation-overlay.visible .content > *:nth-child(1)  { animation-delay: 0.25s; }
-.invitation-overlay.visible .content > *:nth-child(2)  { animation-delay: 0.35s; }
-.invitation-overlay.visible .content > *:nth-child(3)  { animation-delay: 0.42s; }
-.invitation-overlay.visible .content > *:nth-child(4)  { animation-delay: 0.48s; }
-.invitation-overlay.visible .content > *:nth-child(5)  { animation-delay: 0.54s; }
-.invitation-overlay.visible .content > *:nth-child(6)  { animation-delay: 0.60s; }
-.invitation-overlay.visible .content > *:nth-child(7)  { animation-delay: 0.65s; }
-.invitation-overlay.visible .content > *:nth-child(8)  { animation-delay: 0.70s; }
-.invitation-overlay.visible .content > *:nth-child(9)  { animation-delay: 0.75s; }
-.invitation-overlay.visible .content > *:nth-child(10) { animation-delay: 0.80s; }
-@keyframes revealUp {
-  to { opacity: 1; transform: translateY(0); }
-}
+/* Fotos de ejercicio */
+.photo-row { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+.thumb { width: 52px; height: 52px; flex: none; object-fit: cover; border: 1px solid var(--panel-border); border-radius: var(--corner); background: #0d0e12; }
+.thumb-ph { display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--tx-dark); }
+.file-btn { font-family: var(--font-hud); font-size: 12px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; border: 1px solid var(--panel-border); background: var(--panel); color: var(--tx-main); border-radius: var(--corner); padding: 8px 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.file-btn:active { background: var(--panel-active); }
+.file-btn { position: relative; overflow: hidden; }
+.file-btn input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; font-size: 0; padding: 0; border: 0; }
+.ex-photo { display: block; width: 100%; height: min(20vh, 170px); cursor: zoom-in; object-fit: contain; margin: 0 auto 12px; background: #0d0e12; border: 1px solid var(--panel-border); border-radius: var(--corner); }
+@media (max-height: 520px) { .ex-photo { display: none; } }
 
-/* ── CARD ELEMENTS ── */
-.floral-top { display: flex; justify-content: center; margin-bottom: 10px; }
-.floral-top svg { width: 100%; max-width: 280px; height: 80px; }
+/* Foto ampliada: baja desde arriba */
+#pv { position: fixed; left: 0; right: 0; top: 0; z-index: 60; display: flex; flex-direction: column; align-items: center; gap: 8px;
+  padding: calc(12px + env(safe-area-inset-top, 0px)) 12px 12px; background: rgba(7,8,10,.97); border-bottom: 2px solid var(--volt);
+  box-shadow: 0 12px 40px rgba(0,0,0,.6); transform: translateY(-110%); transition: transform .3s cubic-bezier(.2,.8,.2,1); pointer-events: none; }
+#pv.open { transform: translateY(0); pointer-events: auto; }
+#pv img { max-width: 100%; max-height: 78vh; max-height: 78dvh; object-fit: contain; border-radius: var(--corner); }
+#pv small { font-size: 11px; letter-spacing: .12em; color: var(--tx-muted); }
 
-.from-family {
-  text-align: center;
-  font-family: 'EB Garamond', serif;
-  font-size: 10px; letter-spacing: 0.35em; text-transform: uppercase;
-  color: var(--gold); margin-bottom: 10px;
-}
-.invites {
-  text-align: center;
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 13px; font-weight: 300; letter-spacing: 0.2em; text-transform: uppercase;
-  color: var(--text-mid); margin-bottom: 4px;
-}
-.celebrate {
-  text-align: center;
-  font-family: 'EB Garamond', serif;
-  font-size: 13px; font-style: italic;
-  color: var(--text-mid); margin-bottom: 14px;
-}
-.title-block { text-align: center; margin-bottom: 18px; }
-.dia-de-la {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 15px; font-weight: 300; letter-spacing: 0.25em; text-transform: uppercase;
-  color: var(--burgundy-light); display: block; margin-bottom: 2px;
-}
-.madre-title {
-  font-family: 'Great Vibes', cursive;
-  font-size: clamp(54px, 15vw, 68px);
-  color: var(--burgundy); line-height: 1; display: block;
-  text-shadow: 2px 2px 0px rgba(201,169,110,0.2);
-}
+/* Flash FX */
+#fl { position: fixed; inset: 0; background: #fff; opacity: 0; pointer-events: none; z-index: 99; }
+#fl.on { animation: flashFX .35s cubic-bezier(0.1, 0.9, 0.2, 1); }
+@keyframes flashFX { from { opacity: 0.9; } to { opacity: 0; } }
 
-.divider {
-  display: flex; align-items: center; gap: 12px; margin: 14px 0;
-}
-.divider-line {
-  height: 1px; flex: 1;
-  background: linear-gradient(90deg, transparent, var(--beige-mid), var(--gold), var(--beige-mid), transparent);
-}
-.divider-icon { color: var(--burgundy); font-size: 16px; }
-
-.message {
-  text-align: center;
-  font-family: 'EB Garamond', serif;
-  font-size: 15px; font-style: italic; line-height: 1.78;
-  color: var(--text-mid); padding: 0 8px; margin-bottom: 22px;
-}
-
-.details-border {
-  border: 1px solid var(--beige-dark);
-  background: rgba(245,237,224,0.5);
-  padding: 18px 18px; position: relative; margin-bottom: 16px;
-}
-.details-border::before,
-.details-border::after {
-  content: ''; position: absolute;
-  width: 12px; height: 12px;
-  border-color: var(--gold); border-style: solid;
-}
-.details-border::before { top:-1px; left:-1px; border-width: 2px 0 0 2px; }
-.details-border::after  { bottom:-1px; right:-1px; border-width: 0 2px 2px 0; }
-
-.corner-tl, .corner-br {
-  position: absolute; width: 12px; height: 12px;
-  border-color: var(--gold); border-style: solid;
-}
-.corner-tl { top:-1px; right:-1px; border-width: 2px 2px 0 0; }
-.corner-br { bottom:-1px; left:-1px; border-width: 0 0 2px 2px; }
-
-.detail-row {
-  display: flex; align-items: flex-start; gap: 12px;
-  padding: 9px 0;
-  border-bottom: 1px solid rgba(212,184,150,0.3);
-}
-.detail-row:last-child  { border-bottom: none; padding-bottom: 0; }
-.detail-row:first-child { padding-top: 0; }
-
-.detail-icon { font-size: 15px; margin-top: 2px; flex-shrink: 0; width: 18px; text-align: center; }
-.detail-label {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase;
-  color: var(--gold); display: block; margin-bottom: 1px;
-}
-.detail-value {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 16px; font-weight: 600;
-  color: var(--text-dark); display: block;
-}
-.detail-sub {
-  font-family: 'EB Garamond', serif;
-  font-size: 12px; font-style: italic;
-  color: var(--text-mid); display: block;
-}
-
-.floral-bottom { display: flex; justify-content: center; margin: 10px 0 6px; }
-.floral-bottom svg { width: 180px; height: 58px; transform: scaleY(-1) scaleX(-1); opacity: 0.8; }
-
-.footer { text-align: center; margin-top: 4px; }
-.footer-text {
-  font-family: 'EB Garamond', serif;
-  font-size: 12px; font-style: italic;
-  color: var(--burgundy-pale); letter-spacing: 0.05em;
-}
-.footer-hearts { color: var(--burgundy); font-size: 13px; margin-top: 5px; letter-spacing: 6px; }
-
-.bottom-ornament {
-  display: flex; align-items: center; gap: 8px; margin-top: 14px;
-}
-
-/* Close button */
-.close-btn {
-  display: block; margin: 20px auto 4px;
-  background: none;
-  border: 1px solid rgba(201,169,110,0.35);
-  color: rgba(201,169,110,0.65);
-  font-family: 'EB Garamond', serif;
-  font-size: 13px; letter-spacing: 0.2em;
-  padding: 9px 24px; cursor: pointer;
-  border-radius: 1px;
-  transition: all 0.3s ease;
-  opacity: 0;
-}
-.invitation-overlay.visible .close-btn {
-  animation: revealUp 0.6s ease 1.0s forwards;
-}
-.close-btn:hover { background: rgba(201,169,110,0.1); color: var(--gold); border-color: var(--gold); }
-/* ── MUSIC BUTTON ── */
-.music-btn {
-  position: fixed;
-  bottom: 22px; right: 18px;
-  z-index: 200;
-  width: 42px; height: 42px;
-  border-radius: 50%;
-  background: rgba(107,26,42,0.85);
-  border: 1px solid rgba(201,169,110,0.5);
-  color: var(--gold-light);
-  font-size: 18px;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-  opacity: 0;
-  transform: scale(0);
-  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.2,0.8,0.3,1), background 0.2s;
-  -webkit-tap-highlight-color: transparent;
-}
-.music-btn.visible { opacity: 1; transform: scale(1); }
-.music-btn:hover   { background: rgba(139,42,62,0.95); }
-.music-btn.muted   { opacity: 0.5; }
-
-/* Hidden YouTube iframe */
-#yt-player {
-  position: fixed;
-  top: -9999px; left: -9999px;
-  width: 1px; height: 1px;
-  pointer-events: none;
-  visibility: hidden;
+/* Switch minimal */
+.sw-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--panel-border);
+  font-size: 13px;
 }
 </style>
 </head>
 <body>
 
-<!-- YouTube iframe (hidden, audio only) -->
-<iframe id="yt-player"
-  src="about:blank"
-  allow="autoplay"
-  frameborder="0">
-</iframe>
+<div id="fl"></div>
+<div id="pv"><img alt=""><small>TOCA PARA CERRAR</small></div>
 
-<!-- Music toggle button -->
-<button class="music-btn" id="musicBtn" onclick="toggleMusic()" title="Música">🎵</button>
+<main>
+  <section id="list"></section>
+  <section id="edit" hidden></section>
+  <section id="hist" hidden></section>
+  <section id="cfg" hidden></section>
+  <section id="play" hidden></section>
+</main>
 
-<div class="petals-container" id="petals"></div>
+<script>
+const $ = s => document.querySelector(s);
+const uid = () => Math.random().toString(36).slice(2, 8);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt = s => Math.floor(s/60) + ':' + String(s%60).padStart(2, '0');
+const f2 = s => String(Math.floor(s/60)).padStart(2, '0') + ':' + String(s%60).padStart(2, '0');
 
-<!-- ENVELOPE SCENE -->
-<div class="scene">
-  <div class="envelope-wrapper" id="envelope" onclick="openEnvelope()">
-    <div class="env-body">
-      <div class="env-left"></div>
-      <div class="env-right"></div>
-      <div class="env-bottom-v"></div>
-    </div>
-    <div class="env-border"></div>
-    <div class="wax-seal"><span class="wax-seal-text">M</span></div>
-    <div class="env-flap"></div>
+let db = { routines: [], set: {}, hist: [] };
+try { const d = JSON.parse(localStorage.getItem('gt1')); if(d && d.routines) db = d; } catch(e){}
+db.set = Object.assign({ sound: true, voice: true, flash: true, vol: 80, ek: '', ev: '21m00Tcm4TlvDq8ikWAM' }, db.set);
+db.hist = db.hist || [];
 
-    <!-- Mini card that peeks out -->
-    <div class="card-rise" id="cardRise">
-      <svg viewBox="0 0 200 56" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="200" height="56" rx="2" fill="#faf6f0"/>
-        <rect x="1" y="1" width="198" height="54" rx="1.5" fill="none" stroke="#c9a96e" stroke-width="0.8"/>
-        <text x="100" y="34" font-family="'Great Vibes', cursive" font-size="21"
-              fill="#6b1a2a" text-anchor="middle">la Madre</text>
-      </svg>
-    </div>
-  </div>
+if(!db.routines.length) {
+  db.routines = [
+    { id: uid(), name: 'PRESS & POWER (PECHO)', ex: [{ n: 'PRESS BANCA PLANO', w: 90, r: 45, s: 4 }, { n: 'FONDOS LASTRADOS', w: 60, r: 30, s: 3 }] },
+    { id: uid(), name: 'TABATA DESTRUCTOR', ex: [{ n: 'BURPEES OVER BAR', w: 20, r: 10, s: 8 }, { n: 'ASSAULT BIKE SPRINT', w: 20, r: 10, s: 8 }] }
+  ];
+}
 
-  <div class="tap-hint" id="tapHint">
-    <span class="hint-icon">💌</span>
-    <p>Toca para abrir tu invitación</p>
-  </div>
-</div>
+const save = () => { try { localStorage.setItem('gt1', JSON.stringify(db)); return true; } catch(e){ return false; } };
+const total = r => r.ex.reduce((a, e) => a + (e.w + e.r) * e.s, 0);
 
-<!-- FULL INVITATION OVERLAY -->
-<div class="invitation-overlay" id="invitationOverlay">
-  <div class="card-container">
-    <div class="card">
-      <div class="church-bg"></div>
-      <div class="texture"></div>
-      <div class="content">
+let cur = null, P = null, ac = null, wl = null;
 
-        <div class="floral-top">
-          <svg viewBox="0 0 280 90" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M140 85 C140 60 130 40 100 25" stroke="#7a4a3a" stroke-width="1.2" fill="none" opacity="0.6"/>
-            <path d="M140 85 C140 60 150 40 180 25" stroke="#7a4a3a" stroke-width="1.2" fill="none" opacity="0.6"/>
-            <path d="M140 85 C138 55 115 45 85 50" stroke="#7a4a3a" stroke-width="1" fill="none" opacity="0.5"/>
-            <path d="M140 85 C142 55 165 45 195 50" stroke="#7a4a3a" stroke-width="1" fill="none" opacity="0.5"/>
-            <path d="M140 85 C136 65 105 65 70 55" stroke="#7a4a3a" stroke-width="0.9" fill="none" opacity="0.4"/>
-            <path d="M140 85 C144 65 175 65 210 55" stroke="#7a4a3a" stroke-width="0.9" fill="none" opacity="0.4"/>
-            <ellipse cx="110" cy="52" rx="12" ry="6" fill="#6b8c5a" opacity="0.55" transform="rotate(-30 110 52)"/>
-            <ellipse cx="170" cy="52" rx="12" ry="6" fill="#6b8c5a" opacity="0.55" transform="rotate(30 170 52)"/>
-            <ellipse cx="80" cy="58" rx="10" ry="5" fill="#7a9e6a" opacity="0.45" transform="rotate(-45 80 58)"/>
-            <ellipse cx="200" cy="58" rx="10" ry="5" fill="#7a9e6a" opacity="0.45" transform="rotate(45 200 58)"/>
-            <circle cx="140" cy="18" r="16" fill="#6b1a2a" opacity="0.85"/>
-            <circle cx="140" cy="18" r="11" fill="#8b2a3e" opacity="0.7"/>
-            <ellipse cx="133" cy="14" rx="8" ry="10" fill="#a03555" opacity="0.5" transform="rotate(-20 133 14)"/>
-            <ellipse cx="147" cy="14" rx="8" ry="10" fill="#a03555" opacity="0.5" transform="rotate(20 147 14)"/>
-            <ellipse cx="140" cy="10" rx="7" ry="9" fill="#b84060" opacity="0.5"/>
-            <circle cx="140" cy="18" r="5" fill="#6b1a2a" opacity="0.9"/>
-            <circle cx="98" cy="24" r="11" fill="#c4748a" opacity="0.7"/>
-            <circle cx="98" cy="24" r="7" fill="#d4849a" opacity="0.6"/>
-            <ellipse cx="92" cy="20" rx="6" ry="8" fill="#e8a0b0" opacity="0.45" transform="rotate(-25 92 20)"/>
-            <ellipse cx="104" cy="20" rx="6" ry="8" fill="#e8a0b0" opacity="0.45" transform="rotate(25 104 20)"/>
-            <circle cx="98" cy="24" r="3.5" fill="#8b2a3e" opacity="0.8"/>
-            <circle cx="182" cy="24" r="11" fill="#c4748a" opacity="0.7"/>
-            <circle cx="182" cy="24" r="7" fill="#d4849a" opacity="0.6"/>
-            <ellipse cx="176" cy="20" rx="6" ry="8" fill="#e8a0b0" opacity="0.45" transform="rotate(-25 176 20)"/>
-            <ellipse cx="188" cy="20" rx="6" ry="8" fill="#e8a0b0" opacity="0.45" transform="rotate(25 188 20)"/>
-            <circle cx="182" cy="24" r="3.5" fill="#8b2a3e" opacity="0.8"/>
-            <circle cx="68" cy="50" r="7" fill="#d4849a" opacity="0.55"/>
-            <circle cx="55" cy="62" r="5" fill="#e8a0b0" opacity="0.5"/>
-            <circle cx="212" cy="50" r="7" fill="#d4849a" opacity="0.55"/>
-            <circle cx="225" cy="62" r="5" fill="#e8a0b0" opacity="0.5"/>
-            <circle cx="140" cy="18" r="2" fill="#c9a96e" opacity="0.9"/>
-            <circle cx="98" cy="24" r="1.5" fill="#c9a96e" opacity="0.8"/>
-            <circle cx="182" cy="24" r="1.5" fill="#c9a96e" opacity="0.8"/>
-          </svg>
-        </div>
+function show(v) {
+  ['list','edit','hist','cfg','play'].forEach(x => $('#' + x).hidden = x !== v);
+  $('main').classList.toggle('pl', v === 'play');
+  if(v !== 'play') ph('');
+  window.scrollTo(0,0);
+}
 
-        <p class="from-family">La Familia</p>
-        <p class="invites">Con amor, te invita a</p>
-        <p class="celebrate">celebrar</p>
+const ph = c => { document.body.className = document.documentElement.className = c; };
+const lock = () => { try { navigator.wakeLock.request('screen').then(l => wl = l).catch(()=>{}); } catch(e){} };
+document.addEventListener('visibilitychange', () => { if(!document.hidden && P) lock(); });
 
-        <div class="title-block">
-          <span class="dia-de-la">El Día de</span>
-          <span class="madre-title">la Madre</span>
-        </div>
+/* Audio Engine */
+function beep(f, d) {
+  if(!db.set.sound) return;
+  try {
+    ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+    const o = ac.createOscillator(), g = ac.createGain();
+    o.type = 'sawtooth';
+    o.frequency.value = f;
+    g.gain.setValueAtTime(0.001, ac.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.3 * (db.set.vol / 100), ac.currentTime + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + d);
+    o.connect(g);
+    g.connect(ac.destination);
+    o.start();
+    o.stop(ac.currentTime + d);
+  } catch(e){}
+}
 
-        <div class="divider">
-          <div class="divider-line"></div>
-          <span class="divider-icon">✦</span>
-          <div class="divider-line"></div>
-        </div>
+let VS = [];
+const loadV = () => { try { VS = speechSynthesis.getVoices().filter(v => /^es/i.test(v.lang)); } catch(e){} };
+try { loadV(); speechSynthesis.onvoiceschanged = () => { loadV(); if(!$('#cfg').hidden) renderCfg(); }; } catch(e){}
+const voice = () => VS.find(v => v.name === db.set.vn) || VS[0];
 
-        <p class="message">
-          Con mucho cariño te invitamos a celebrar este día tan especial, para compartir en familia y agradecer todo tu amor y dedicación.
-        </p>
+const AC = new Map(), AU = new Audio(), SIL = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQAAAAA=';
+let ELBAD = false, sayId = 0;
+const unlock = () => { try { AU.src = SIL; AU.play().catch(()=>{}); } catch(e){} };
 
-        <div class="details-border">
-          <div class="corner-tl"></div>
-          <div class="corner-br"></div>
-          <div class="detail-row">
-            <div class="detail-icon">📅</div>
-            <div>
-              <span class="detail-label">Fecha</span>
-              <span class="detail-value">Sábado, 16 de Mayo</span>
-              <span class="detail-sub">2026</span>
-            </div>
-          </div>
-          <div class="detail-row">
-            <div class="detail-icon">🕐</div>
-            <div>
-              <span class="detail-label">Hora</span>
-              <span class="detail-value">12:30 PM</span>
-              <span class="detail-sub">Almuerzo familiar</span>
-            </div>
-          </div>
-          <div class="detail-row">
-            <div class="detail-icon">📍</div>
-            <div>
-              <span class="detail-label">Lugar</span>
-              <span class="detail-value">La Finca de Juan</span>
-              <span class="detail-sub">Serranías · Jardín, Antioquia</span>
-            </div>
-          </div>
-        </div>
+function el(t) {
+  const k = db.set.ev + '|' + t;
+  if(AC.has(k)) return AC.get(k);
+  const p = fetch('https://api.elevenlabs.io/v1/text-to-speech/' + encodeURIComponent(db.set.ev) + '?output_format=mp3_44100_64', {
+    method: 'POST',
+    headers: { 'xi-api-key': db.set.ek, 'Content-Type': 'application/json', Accept: 'audio/mpeg' },
+    body: JSON.stringify({ text: t, model_id: 'eleven_multilingual_v2', voice_settings: { stability: 0.45, similarity_boost: 0.8 } })
+  }).then(r => { if(!r.ok) throw new Error(r.status); return r.blob(); })
+    .then(b => URL.createObjectURL(b))
+    .catch(x => { AC.delete(k); throw x; });
+  AC.set(k, p);
+  return p;
+}
 
-        <div class="floral-bottom">
-          <svg viewBox="0 0 280 90" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M140 85 C140 60 130 40 100 25" stroke="#7a4a3a" stroke-width="1.2" fill="none" opacity="0.5"/>
-            <path d="M140 85 C140 60 150 40 180 25" stroke="#7a4a3a" stroke-width="1.2" fill="none" opacity="0.5"/>
-            <ellipse cx="110" cy="52" rx="12" ry="6" fill="#6b8c5a" opacity="0.5" transform="rotate(-30 110 52)"/>
-            <ellipse cx="170" cy="52" rx="12" ry="6" fill="#6b8c5a" opacity="0.5" transform="rotate(30 170 52)"/>
-            <circle cx="140" cy="18" r="14" fill="#6b1a2a" opacity="0.7"/>
-            <circle cx="140" cy="18" r="9" fill="#8b2a3e" opacity="0.6"/>
-            <circle cx="140" cy="18" r="4" fill="#c9a96e" opacity="0.8"/>
-            <circle cx="98" cy="28" r="9" fill="#c4748a" opacity="0.6"/>
-            <circle cx="98" cy="28" r="3" fill="#8b2a3e" opacity="0.7"/>
-            <circle cx="182" cy="28" r="9" fill="#c4748a" opacity="0.6"/>
-            <circle cx="182" cy="28" r="3" fill="#8b2a3e" opacity="0.7"/>
-            <circle cx="68" cy="52" r="6" fill="#d4849a" opacity="0.5"/>
-            <circle cx="212" cy="52" r="6" fill="#d4849a" opacity="0.5"/>
-          </svg>
-        </div>
+const pre = t => { if(db.set.voice && db.set.ek && !ELBAD) el(t).catch(()=>{}); };
 
-        <div class="footer">
-          <p class="footer-text">Te esperamos con el corazón abierto</p>
-          <p class="footer-hearts">♥ ♥ ♥</p>
-        </div>
+function say(t, m) {
+  if(!db.set.voice) return;
+  try { speechSynthesis.cancel(); AU.pause(); } catch(e){}
+  if(!db.set.ek || ELBAD) return say0(t, m);
+  const n = ++sayId;
+  el(t).then(u => {
+    if(n !== sayId) return;
+    AU.src = u; AU.volume = db.set.vol / 100;
+    return AU.play();
+  }).catch(x => {
+    if(/^(401|402|404|422)$/.test(x.message)) ELBAD = true;
+    if(n === sayId) say0(t, m);
+  });
+}
 
-        <div class="bottom-ornament">
-          <div style="height:1px;flex:1;background:linear-gradient(90deg,transparent,var(--gold));"></div>
-          <div style="width:5px;height:5px;background:var(--gold);transform:rotate(45deg);"></div>
-          <div style="width:7px;height:7px;background:var(--burgundy);transform:rotate(45deg);"></div>
-          <div style="width:5px;height:5px;background:var(--gold);transform:rotate(45deg);"></div>
-          <div style="height:1px;flex:1;background:linear-gradient(90deg,var(--gold),transparent);"></div>
-        </div>
+function say0(t, m) {
+  if(!db.set.voice || !window.speechSynthesis) return;
+  try {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(t), v = voice();
+    if(v) { u.voice = v; u.lang = v.lang; } else u.lang = 'es-419';
+    u.volume = db.set.vol / 100;
+    u.pitch = m === 'r' ? 0.95 : 1.05;
+    u.rate = 1.05;
+    speechSynthesis.speak(u);
+  } catch(e){}
+}
 
+function openPv(src) { $('#pv img').src = src; $('#pv').classList.add('open'); }
+function closePv() { $('#pv').classList.remove('open'); }
+$('#pv').addEventListener('click', closePv);
+
+function flash() {
+  if(!db.set.flash) return;
+  const f = $('#fl');
+  f.classList.remove('on');
+  void f.offsetWidth;
+  f.classList.add('on');
+}
+
+/* Pantalla de Lista */
+function renderList() {
+  $('#list').innerHTML = `
+    <div class="brand-header">
+      <div>
+        <div class="brand-tag">TACTICAL TIMER</div>
+        <h1>IRON CLOCK</h1>
+      </div>
+      <div style="display:flex;gap:4px">
+        <button data-a="hist">HISTORIAL</button>
+        <button data-a="cfg">AJUSTES</button>
       </div>
     </div>
 
-    <button class="close-btn" onclick="closeInvitation()">✕ &nbsp; Cerrar</button>
-  </div>
-</div>
+    ${db.routines.map(r => `
+      <div class="card active-card">
+        <div class="routine-title">${esc(r.name)}</div>
+        <div class="routine-meta">
+          <span>${r.ex.length} EJERCICIOS</span>
+          <span>TIEMPO: ${fmt(total(r))}</span>
+          <span>${r.ex.reduce((a,b)=>a+b.s,0)} SERIES</span>
+        </div>
+        <div class="btn-grid">
+          <button class="pri-volt" data-a="go" data-id="${r.id}">▶ INICIAR</button>
+          <button data-a="ed" data-id="${r.id}">EDITAR</button>
+          <button data-a="dup" data-id="${r.id}">COPIA</button>
+          <button class="dg" data-a="rm" data-id="${r.id}">✕</button>
+        </div>
+      </div>
+    `).join('')}
 
-<script>
-  // ── PETALS ──
-  const petalColors = ['#c4748a','#d4849a','#e8a0b0','#8b2a3e','#b85070','#c9a96e'];
-  const petalContainer = document.getElementById('petals');
+    <button data-a="new" style="width:100%;margin-top:8px;border-style:dashed;">+ CREAR NUEVA RUTINA</button>
+  `;
+}
 
-  for (let i = 0; i < 24; i++) {
-    const p = document.createElement('div');
-    p.className = 'petal';
-    const color = petalColors[Math.floor(Math.random() * petalColors.length)];
-    const size  = 7 + Math.random() * 9;
-    p.style.cssText = `
-      left: ${Math.random() * 100}%;
-      background: ${color};
-      width: ${size}px;
-      height: ${size * 1.4}px;
-      border-radius: ${Math.random() > 0.5 ? '50% 50% 50% 0' : '50% 0 50% 50%'};
-      animation-duration: ${6 + Math.random() * 9}s;
-      animation-delay: ${Math.random() * 12}s;
-    `;
-    petalContainer.appendChild(p);
+$('#list').addEventListener('click', e => {
+  const b = e.target.closest('[data-a]');
+  if(!b) return;
+  const a = b.dataset.a, id = b.dataset.id;
+  const r = db.routines.find(x => x.id === id);
+
+  if(a === 'cfg') { renderCfg(); show('cfg'); }
+  else if(a === 'hist') { renderHist(); show('hist'); }
+  else if(a === 'new') {
+    const n = { id: uid(), name: 'NUEVA RUTINA', ex: [{ n: 'SERIE 1', w: 60, r: 30, s: 3 }] };
+    db.routines.push(n); save(); openEdit(n.id);
+  }
+  else if(a === 'ed') openEdit(r.id);
+  else if(a === 'go') start(r);
+  else if(a === 'dup') {
+    db.routines.push(JSON.parse(JSON.stringify({ ...r, id: uid(), name: r.name + ' (COPY)' })));
+    save(); renderList();
+  }
+  else if(a === 'rm' && confirm(`¿ELIMINAR ${r.name}?`)) {
+    db.routines = db.routines.filter(x => x !== r); save(); renderList();
+  }
+});
+
+/* Editor */
+function openEdit(id) {
+  cur = db.routines.find(r => r.id === id);
+  renderEdit();
+  show('edit');
+}
+
+function renderEdit() {
+  const t = (f, v) => `
+    <div class="dual-time">
+      <input data-f="${f}m" type="number" inputmode="numeric" min="0" value="${Math.floor(v/60)}">m
+      <span>:</span>
+      <input data-f="${f}s" type="number" inputmode="numeric" min="0" max="59" value="${v%60}">s
+    </div>`;
+
+  $('#edit').innerHTML = `
+    <div class="editor-top">
+      <button data-a="back">‹ VOLVER</button>
+      <button class="pri-volt" data-a="play">▶ ENTRENAR</button>
+    </div>
+
+    <input id="rn" class="routine-input" value="${esc(cur.name)}" placeholder="NOMBRE DE LA RUTINA">
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <span id="tot" style="font-size:11px;color:var(--volt);font-weight:700">DURACIÓN: 00:00</span>
+      <button data-a="add" style="font-size:11px">+ EJERCICIO</button>
+    </div>
+
+    ${cur.ex.map((e, i) => `
+      <div class="card" data-i="${i}">
+        <div style="display:flex;gap:4px">
+          <input data-f="n" value="${esc(e.n)}" style="flex:1" placeholder="EJERCICIO">
+          <button data-a="up">↑</button>
+          <button data-a="dn">↓</button>
+          <button data-a="cp">⧉</button>
+          <button class="dg" data-a="del">✕</button>
+        </div>
+        <div class="grid-time">
+          <label>TRABAJO ${t('w', e.w)}</label>
+          <label>DESCANSO ${t('r', e.r)}</label>
+          <label>SERIES
+            <div class="dual-time"><input data-f="s" type="number" inputmode="numeric" min="1" value="${e.s}"></div>
+          </label>
+        </div>
+        <div class="photo-row">
+          ${e.img ? `<img class="thumb" src="${e.img}" alt="">` : '<div class="thumb thumb-ph">📷</div>'}
+          <label class="file-btn">${e.img ? 'CAMBIAR FOTO' : 'AÑADIR FOTO'}<input type="file" accept="image/*" data-f="img"></label>
+          ${e.img ? '<button class="dg" data-a="rmimg">QUITAR</button>' : ''}
+        </div>
+      </div>
+    `).join('')}
+  `;
+  totCalc();
+}
+
+const totCalc = () => {
+  const t = $('#tot');
+  if(t) t.textContent = `DURACIÓN TOTAL ESTIMADA: ${fmt(total(cur))}`;
+};
+
+$('#edit').addEventListener('input', e => {
+  if(e.target.id === 'rn') { cur.name = e.target.value.toUpperCase(); save(); return; }
+  const c = e.target.closest('[data-i]');
+  if(!c) return;
+  const x = cur.ex[c.dataset.i];
+  const q = f => +c.querySelector(`[data-f="${f}"]`).value || 0;
+  x.n = c.querySelector('[data-f="n"]').value.toUpperCase();
+  x.w = q('wm') * 60 + q('ws');
+  x.r = q('rm') * 60 + q('rs');
+  x.s = Math.max(1, Math.floor(q('s')));
+  save();
+  totCalc();
+});
+
+async function shrink(file, max = 640, q = 0.72) {
+  let src, w, h;
+  try {
+    src = await new Promise((ok, no) => {
+      const u = URL.createObjectURL(file), im = new Image();
+      im.onload = () => { URL.revokeObjectURL(u); ok(im); };
+      im.onerror = () => { URL.revokeObjectURL(u); no(new Error('img')); };
+      im.src = u;
+    });
+    w = src.naturalWidth; h = src.naturalHeight;
+  } catch(e) {
+    src = await createImageBitmap(file);
+    w = src.width; h = src.height;
+  }
+  const k = Math.min(1, max / Math.max(w, h)), cv = document.createElement('canvas');
+  cv.width = Math.round(w * k); cv.height = Math.round(h * k);
+  cv.getContext('2d').drawImage(src, 0, 0, cv.width, cv.height);
+  return cv.toDataURL('image/jpeg', q);
+}
+
+$('#edit').addEventListener('change', async e => {
+  if(e.target.dataset.f !== 'img') return;
+  const f = e.target.files[0], c = e.target.closest('[data-i]');
+  if(!f || !c) return;
+  const lb = e.target.closest('.file-btn');
+  if(lb && lb.firstChild) lb.firstChild.textContent = 'PROCESANDO… ';
+  const x = cur.ex[c.dataset.i], old = x.img;
+  try {
+    x.img = await shrink(f);
+    if(!save()) { if(old) x.img = old; else delete x.img; alert('No hay espacio para guardar esta foto. Quita fotos de otros ejercicios e intenta de nuevo.'); }
+  } catch(err) { alert('No pude leer esa imagen (' + (f.type || 'formato desconocido') + '). Prueba con otra foto.'); }
+  renderEdit();
+});
+
+$('#edit').addEventListener('click', e => {
+  const b = e.target.closest('[data-a]');
+  if(!b) return;
+  const a = b.dataset.a, c = b.closest('[data-i]'), i = c ? +c.dataset.i : -1, L = cur.ex;
+
+  if(a === 'back') { renderList(); show('list'); return; }
+  if(a === 'play') { start(cur); return; }
+  if(a === 'add') L.push({ n: 'EJERCICIO ' + (L.length + 1), w: 45, r: 15, s: 3 });
+  else if(a === 'cp') L.splice(i + 1, 0, { ...L[i] });
+  else if(a === 'rmimg') delete L[i].img;
+  else if(a === 'del' && L.length > 1) L.splice(i, 1);
+  else if(a === 'up' && i > 0) [L[i-1], L[i]] = [L[i], L[i-1]];
+  else if(a === 'dn' && i < L.length - 1) [L[i+1], L[i]] = [L[i], L[i+1]];
+
+  save();
+  renderEdit();
+});
+
+/* Reproductor de Entrenamiento (HUD) */
+function build(r) {
+  const st = [{ t: 'p', n: 'PREPÁRATE', d: 5, first: r.ex[0].n, img: r.ex[0].img }];
+  r.ex.forEach((e, i) => {
+    for(let k = 1; k <= e.s; k++) {
+      if(e.w > 0) st.push({ t: 'w', n: e.n, d: e.w, k, K: e.s, i, N: r.ex.length, img: e.img });
+      if(e.r > 0) st.push({ t: 'r', n: e.n, d: e.r, k, K: e.s, i, N: r.ex.length, img: e.img });
+    }
+  });
+  while(st.length && st[st.length - 1].t === 'r') st.pop();
+  return st;
+}
+
+function start(r) {
+  if(P) clearInterval(P.iv);
+  const steps = build(r);
+  let a = 0;
+  const cum = steps.map(s => { const c = a; if(s.t !== 'p') a += s.d; return c; });
+  P = { r, steps, cum, tot: a, idx: -1, paused: false };
+
+  beep(880, .05); unlock(); say0(' '); lock();
+  pre(phr(0).t);
+  show('play');
+  go(0);
+  P.iv = setInterval(tick, 200);
+}
+
+const lbl = { p: 'PREPARACIÓN', w: 'TRABAJO', r: 'DESCANSO' };
+
+function spoken(d) {
+  const m = Math.floor(d/60), s = d%60;
+  return (m ? m + (m === 1 ? ' minuto' : ' minutos') : '') + (m && s ? ' y ' : '') + (s ? s + ' segundos' : '');
+}
+
+function phr(i) {
+  const s = P.steps[i];
+  if(!s) return null;
+  if(s.say) return s.say;
+  let t, m = 'w';
+  if(s.t === 'p') t = 'Atención. Iniciamos con ' + s.first + '.';
+  else if(s.t === 'w') t = s.n + '.' + (s.K > 1 ? ' Serie ' + s.k + ' de ' + s.K + '.' : '') + ' ' + spoken(s.d) + '.';
+  else {
+    const w = P.steps.slice(i + 1).find(x => x.t === 'w');
+    m = 'r';
+    t = 'Descanso, ' + spoken(s.d) + '.' + (w && w.i !== s.i ? ' Siguiente: ' + w.n + '.' : '');
+  }
+  return s.say = { t, m };
+}
+
+function go(i, q) {
+  if(i >= P.steps.length) return finish();
+  i = Math.max(0, i);
+  P.idx = i;
+  const s = P.steps[i], n = P.steps[i+1];
+  P.end = Date.now() + s.d * 1000;
+  P.last = s.d;
+  P.totalStepTime = s.d;
+  P.paused = false;
+
+  ph(s.t);
+  const nw = P.steps.slice(i + 1).find(x => x.t === 'w');
+  const im = (s.t === 'r' && nw && nw.i !== s.i) ? nw.img : s.img;
+  if($('#pv').classList.contains('open')) { if(im) $('#pv img').src = im; else closePv(); }
+
+  $('#play').innerHTML = `
+    <div class="hud-layout">
+      <div class="hud-header">
+        <span class="hud-phase-tag">${lbl[s.t]}</span>
+        <span class="hud-total-time" id="el">00:00 / ${f2(P.tot)}</span>
+        <button data-a="stop" style="padding:4px 8px;font-size:11px;">✕ SALIR</button>
+      </div>
+
+      <div class="clock-display">
+        ${im ? `<img class="ex-photo" data-a="photo" src="${im}" alt="">` : ''}
+        <div class="clock-title">${esc(s.t === 'p' ? s.first : s.n)}</div>
+        <div id="tm" class="clock-digits">${f2(s.d)}</div>
+        
+        <div class="progress-rail">
+          <div id="pRail" class="progress-rail-fill"></div>
+        </div>
+      </div>
+
+      <div class="hud-footer">
+        <div class="hud-up-next">
+          <span style="color:var(--tx-muted)">SIGUIENTE BLOQUE:</span>
+          <b>${n ? esc(n.n) + (n.t === 'w' ? ' (S'+n.k+')' : ' [DESCANSO]') : 'FINAL'}</b>
+        </div>
+
+        <div class="hud-stats-bar">
+          <div>SERIE: <span>${s.t === 'p' ? '–' : s.k + '/' + s.K}</span></div>
+          <div>EJERCICIO: <span>${s.t === 'p' ? '–' : (s.i + 1) + '/' + s.N}</span></div>
+        </div>
+
+        <div class="tactical-controls">
+          <button data-a="adj" data-v="-10">-10S</button>
+          <button data-a="prev">⏮</button>
+          <button class="btn-main-action" data-a="pp" id="ppBtn">PAUSA</button>
+          <button data-a="nxt">⏭</button>
+          <button data-a="adj" data-v="10">+10S</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  if(q) return;
+  flash();
+  if(s.t === 'w') beep(950, .3); else if(s.t === 'r') beep(450, .3);
+  const f = phr(i); say(f.t, f.m);
+  const nf = phr(i+1); if(nf) pre(nf.t);
+}
+
+function tick() {
+  if(!P || P.paused) return;
+  const ms = P.end - Date.now(), s = P.steps[P.idx];
+  if(ms <= 0) {
+    const ov = -ms;
+    go(P.idx + 1, ov > 1500);
+    if(P && ov > 0) P.end -= ov;
+    return;
   }
 
-  // ── MUSIC ──
-  const VIDEO_ID   = '-zbyjQdFXjM';
-  let musicStarted = false;
-  let isMuted      = false;
-
-  function startMusic() {
-    if (musicStarted) return;
-    musicStarted = true;
-    const iframe = document.getElementById('yt-player');
-    iframe.src = `https://www.youtube.com/embed/${VIDEO_ID}?autoplay=1&mute=0&loop=1&playlist=${VIDEO_ID}&controls=0&rel=0&enablejsapi=1`;
-    setTimeout(() => {
-      document.getElementById('musicBtn').classList.add('visible');
-    }, 1800);
+  const left = Math.ceil(ms / 1000);
+  if(left !== P.last) {
+    P.last = left;
+    if(left <= 3) beep(800, .12);
   }
 
-  function toggleMusic() {
-    const btn    = document.getElementById('musicBtn');
-    const iframe = document.getElementById('yt-player');
-    isMuted = !isMuted;
-    iframe.contentWindow.postMessage(
-      JSON.stringify({ event: 'command', func: isMuted ? 'mute' : 'unMute' }), '*'
-    );
-    btn.textContent = isMuted ? '🔇' : '🎵';
-    btn.classList.toggle('muted', isMuted);
+  const t = $('#tm'), el = $('#el'), rail = $('#pRail');
+  if(t) t.textContent = f2(left);
+  if(el) el.textContent = `${f2(s.t === 'p' ? 0 : P.cum[P.idx] + s.d - left)} / ${f2(P.tot)}`;
+  if(rail && P.totalStepTime > 0) {
+    const pct = Math.max(0, Math.min(100, (1 - (ms / (P.totalStepTime * 1000))) * 100));
+    rail.style.width = pct + '%';
   }
+}
 
-  // ── ENVELOPE LOGIC ──
-  let isOpen = false;
+function finish() {
+  clearInterval(P.iv);
+  db.hist.unshift({ n: P.r.name, t: Date.now(), d: P.tot });
+  db.hist = db.hist.slice(0, 100);
+  save();
+  P = null;
+  try { wl && wl.release(); } catch(e){}
+  closePv(); ph('d'); beep(1100, .6); flash(); say('Entrenamiento completado.');
 
-  function openEnvelope() {
-    if (isOpen) return;
-    isOpen = true;
+  $('#play').innerHTML = `
+    <div class="hud-layout" style="justify-content:center;text-align:center;">
+      <h1 style="font-size:62px;color:var(--volt);margin-bottom:10px">RUTINA COMPLETADA</h1>
+      <p style="color:var(--tx-muted);margin-bottom:20px;letter-spacing:0.1em">BUEN TRABAJO EN EL HIERRO.</p>
+      <button class="pri-volt" data-a="stop" style="max-width:200px;margin:0 auto">VOLVER AL MENÚ</button>
+    </div>
+  `;
+}
 
-    startMusic();
+$('#play').addEventListener('click', e => {
+  const b = e.target.closest('[data-a]');
+  if(!b) return;
+  const a = b.dataset.a;
 
-    const hint = document.getElementById('tapHint');
-    hint.style.opacity = '0';
-    hint.style.pointerEvents = 'none';
-
-    // 1. Open flap + hide seal
-    document.getElementById('envelope').classList.add('opening');
-
-    // 2. Rise mini card
-    setTimeout(() => {
-      document.getElementById('cardRise').classList.add('risen');
-    }, 480);
-
-    // 3. Show full invitation
-    setTimeout(() => {
-      document.getElementById('invitationOverlay').classList.add('visible');
-      document.body.style.overflow = 'hidden';
-    }, 1250);
+  if(a === 'stop') {
+    closePv(); sayId++;
+    if(P) { clearInterval(P.iv); P = null; }
+    $('#play').innerHTML = '';
+    try { wl && wl.release(); } catch(e){}
+    try { speechSynthesis.cancel(); AU.pause(); } catch(e){}
+    renderList(); show('list');
+    return;
   }
+  if(a === 'photo') { openPv(b.getAttribute('src')); return; }
+  if(!P) return;
 
-  function closeInvitation() {
-    const overlay = document.getElementById('invitationOverlay');
-    overlay.classList.remove('visible');
-    document.body.style.overflow = '';
-
-    setTimeout(() => {
-      document.getElementById('envelope').classList.remove('opening');
-      document.getElementById('cardRise').classList.remove('risen');
-      const hint = document.getElementById('tapHint');
-      hint.style.opacity = '1';
-      hint.style.pointerEvents = 'auto';
-      isOpen = false;
-    }, 700);
+  if(a === 'nxt') go(P.idx + 1);
+  else if(a === 'prev') go(P.idx - 1);
+  else if(a === 'adj') {
+    const add = +b.dataset.v * 1000;
+    P.end += add;
+    P.totalStepTime += +b.dataset.v;
   }
+  else if(a === 'pp') {
+    const btn = $('#ppBtn');
+    if(P.paused) {
+      P.end = Date.now() + P.rem;
+      P.paused = false;
+      btn.textContent = 'PAUSA';
+    } else {
+      P.rem = P.end - Date.now();
+      P.paused = true;
+      btn.textContent = 'REANUDAR';
+    }
+  }
+});
+
+/* Configuración */
+function renderCfg() {
+  const v0 = voice();
+  $('#cfg').innerHTML = `
+    <div class="editor-top">
+      <button data-a="back">‹ VOLVER</button>
+      <h1 style="font-size:24px">AJUSTES</h1>
+    </div>
+
+    <div class="card">
+      <div class="sw-row">
+        <span>SONIDO ZUMBADOR</span>
+        <input type="checkbox" data-s="sound" ${db.set.sound?'checked':''}>
+      </div>
+      <div class="sw-row">
+        <span>VOZ GUÍA</span>
+        <input type="checkbox" data-s="voice" ${db.set.voice?'checked':''}>
+      </div>
+      <div class="sw-row">
+        <span>DESTELLO FLASH</span>
+        <input type="checkbox" data-s="flash" ${db.set.flash?'checked':''}>
+      </div>
+      <div class="sw-row">
+        <span>VOLUMEN (${db.set.vol}%)</span>
+        <input type="range" data-s="vol" min="0" max="100" value="${db.set.vol}" style="width:110px">
+      </div>
+    </div>
+
+    <div class="card">
+      <div style="font-size:12px;font-weight:700;color:var(--tx-muted);margin-bottom:6px">VOZ DEL NAVEGADOR</div>
+      ${VS.length ? `<select data-s="vn" style="width:100%">${VS.map(v => `<option value="${esc(v.name)}" ${v0 && v.name === v0.name ? 'selected' : ''}>${esc(v.name)}</option>`).join('')}</select>` : '<span style="font-size:12px;color:var(--tx-dark)">Sin voces del sistema</span>'}
+    </div>
+
+    <div class="card">
+      <div style="font-size:12px;font-weight:700;color:var(--tx-muted);margin-bottom:6px">ELEVENLABS API (OPCIONAL)</div>
+      <input id="ek" type="password" placeholder="xi-api-key..." value="${esc(db.set.ek||'')}" style="width:100%;margin-bottom:6px">
+      <input id="ev" value="${esc(db.set.ev)}" placeholder="Voice ID" style="width:100%">
+      <div id="vst" style="font-size:11px;color:var(--tx-muted);margin-top:6px"></div>
+    </div>
+
+    <button data-a="tv" style="width:100%;margin-top:4px">PROBAR VOZ</button>
+  `;
+}
+
+$('#cfg').addEventListener('input', e => {
+  if(e.target.id === 'ek' || e.target.id === 'ev') {
+    db.set[e.target.id] = e.target.value.trim();
+    ELBAD = false;
+    if(e.target.id === 'ev') AC.clear();
+    save(); return;
+  }
+  const k = e.target.dataset.s;
+  if(k) {
+    db.set[k] = e.target.type === 'checkbox' ? e.target.checked : (k === 'vn' ? e.target.value : +e.target.value);
+    save();
+  }
+});
+
+$('#cfg').addEventListener('click', async e => {
+  const b = e.target.closest('[data-a]');
+  if(!b) return;
+  const a = b.dataset.a, st = $('#vst');
+  if(a === 'back') { renderList(); show('list'); }
+  else if(a === 'tv') {
+    unlock();
+    if(!db.set.ek) { say0('Test de voz completado.'); return; }
+    st.textContent = 'Contactando ElevenLabs...';
+    try {
+      await el('Test de voz');
+      st.textContent = 'Conexión exitosa.';
+      say('Test de voz');
+    } catch(err) {
+      st.textContent = 'Error API. Usando voz del sistema.';
+      say0('Test de voz');
+    }
+  }
+});
+
+/* Historial */
+function renderHist() {
+  $('#hist').innerHTML = `
+    <div class="editor-top">
+      <button data-a="back">‹ VOLVER</button>
+      <h1 style="font-size:24px">REGISTRO DE SESIONES</h1>
+    </div>
+
+    ${db.hist.length ? `
+      ${db.hist.map(h => `
+        <div class="card" style="display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <div style="font-weight:800;font-size:14px">${esc(h.n)}</div>
+            <div style="font-size:11px;color:var(--tx-muted)">${new Date(h.t).toLocaleDateString('es-CO', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' })}</div>
+          </div>
+          <b style="font-family:var(--font-mono);color:var(--volt)">${fmt(h.d)}</b>
+        </div>
+      `).join('')}
+      <button class="dg" data-a="clr" style="width:100%;margin-top:10px">BORRAR REGISTRO</button>
+    ` : '<p style="color:var(--tx-muted);text-align:center;margin-top:30px">SIN REGISTROS DE ENTRENAMIENTO.</p>'}
+  `;
+}
+
+$('#hist').addEventListener('click', e => {
+  const b = e.target.closest('[data-a]');
+  if(!b) return;
+  if(b.dataset.a === 'back') { renderList(); show('list'); }
+  else if(b.dataset.a === 'clr' && confirm('¿VACIAR TODO EL HISTORIAL?')) {
+    db.hist = []; save(); renderHist();
+  }
+});
+
+renderList();
 </script>
 </body>
 </html>
